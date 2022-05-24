@@ -1,7 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:learn_flutter/utils/routes.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
+
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  String name = "";
+  bool changeButton = false;
 
   @override
   Widget build(BuildContext context) {
@@ -18,9 +27,9 @@ class LoginPage extends StatelessWidget {
                 height: 20.0,
                 // child: Text("Madan"),
               ),
-              const Text(
-                " Welcome",
-                style: TextStyle(
+              Text(
+                " Welcome $name",
+                style: const TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
                 ),
@@ -33,11 +42,15 @@ class LoginPage extends StatelessWidget {
                     vertical: 16.0, horizontal: 32.0),
                 child: Column(children: [
                   TextFormField(
-                    decoration: const InputDecoration(
-                      hintText: "Enter Username",
-                      labelText: 'Username',
-                    ),
-                  ),
+                      decoration: const InputDecoration(
+                        hintText: "Enter Username",
+                        labelText: 'Username',
+                      ),
+                      onChanged: (String str) {
+                        setState(() {
+                          name = str;
+                        });
+                      }),
                   TextFormField(
                     obscureText: true,
                     decoration: const InputDecoration(
@@ -48,13 +61,49 @@ class LoginPage extends StatelessWidget {
                   const SizedBox(
                     height: 20.0,
                   ),
-                  ElevatedButton(
-                    onPressed: () {
-                      print("Hi Madan");
+                  InkWell(
+                    onTap: () async {
+                      setState(() {
+                        changeButton = true;
+                      });
+                      await Future.delayed(const Duration(milliseconds: 300));
+                      Navigator.pushNamed(context, MyRoutes.homeRoute);
                     },
-                    child: const Text("Login"),
-                    style: TextButton.styleFrom(minimumSize: const Size(100, 40)),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 250),
+                      width: changeButton ? 50 : 150,
+                      height: 50,
+                      alignment: Alignment.center,
+                      child: changeButton
+                          ? const Icon(
+                              Icons.done,
+                              color: Colors.white,
+                            )
+                          : const Text(
+                              "Login",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
+                              ),
+                            ),
+                      decoration: BoxDecoration(
+                        color: Colors.deepPurple,
+                        // shape:
+                        //     changeButton ? BoxShape.circle : BoxShape.rectangle,
+                        borderRadius:
+                            BorderRadius.circular(changeButton ? 50 : 8),
+                      ),
+                    ),
                   )
+                  // ElevatedButton(
+                  //   onPressed: () {
+                  //     Navigator.pushNamed(context, MyRoutes.homeRoute);
+                  //   },
+                  //   child: const Text("Login"),
+                  //   style:
+                  //       TextButton.styleFrom(minimumSize: const Size(100, 40)),
+                  // )
                 ]),
               )
             ],
