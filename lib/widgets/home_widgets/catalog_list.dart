@@ -1,7 +1,11 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
-import 'package:learn_flutter/pages/home_detail_page.dart';
 import 'package:velocity_x/velocity_x.dart';
+
+import 'package:learn_flutter/models/cart.dart';
 import 'package:learn_flutter/models/catalog.dart';
+import 'package:learn_flutter/pages/home_detail_page.dart';
+
 import '../../widgets/themes.dart';
 import 'catalog_image.dart';
 
@@ -14,7 +18,7 @@ class CatalogList extends StatelessWidget {
       shrinkWrap: true,
       itemCount: CatalogModel.items?.length,
       itemBuilder: (context, index) {
-        final catalog = CatalogModel.getByPosition(index);
+        final catalog = CatalogModel.items![index];
         return InkWell(
           onTap: () => Navigator.push(
             context,
@@ -59,14 +63,8 @@ class CatalogItem extends StatelessWidget {
                 buttonPadding: EdgeInsets.zero,
                 children: [
                   "\$${catalog.price}".text.bold.xl.make(),
-                  ElevatedButton(
-                    onPressed: () {},
-                    style: ButtonStyle(
-                        backgroundColor:
-                            MaterialStateProperty.all(MyTheme.darkBluish),
-                        shape:
-                            MaterialStateProperty.all(const StadiumBorder())),
-                    child: "Add to Cart".text.make(),
+                  _AddToCart(
+                    catalog: catalog,
                   )
                 ],
               ).pOnly(right: 8.0)
@@ -75,5 +73,41 @@ class CatalogItem extends StatelessWidget {
         ],
       ),
     ).color(context.cardColor).rounded.square(130).make().py16();
+  }
+}
+
+class _AddToCart extends StatefulWidget {
+  final Item catalog;
+  const _AddToCart({
+    Key? key,
+    required this.catalog,
+  }) : super(key: key);
+
+  @override
+  State<_AddToCart> createState() => _AddToCartState();
+}
+
+class _AddToCartState extends State<_AddToCart> {
+  final _cart = CartModel();
+  @override
+  Widget build(BuildContext context) {
+    bool isInCart = _cart.items.contains(widget.catalog);
+    return ElevatedButton(
+      onPressed: () {
+        if (!isInCart) {
+          isInCart = isInCart.toggle();
+          final _catalog = CatalogModel();
+          _cart.catalog = _catalog;
+          _cart.add(widget.catalog);
+          setState(() {});
+        }
+      },
+      style: ButtonStyle(
+          backgroundColor: MaterialStateProperty.all(MyTheme.darkBluish),
+          shape: MaterialStateProperty.all(
+            const StadiumBorder(),
+          )),
+      child: isInCart ? const Icon(Icons.done) : "Add to Cart".text.make(),
+    );
   }
 }
